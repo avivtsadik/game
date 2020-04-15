@@ -24,7 +24,7 @@ public class Attack : MonoBehaviour
     }
     IEnumerator ResetDamage()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.8f);
         _canDamage = true;
     }
 }

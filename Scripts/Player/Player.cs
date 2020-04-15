@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityStandardAssets.CrossPlatformInput;
 public class Player : MonoBehaviour, IDamageable
 {
+    public int dimonds;
+
     // Get handle to rigidbody
     private Rigidbody2D _rigid;
     [SerializeField]
@@ -26,6 +28,7 @@ public class Player : MonoBehaviour, IDamageable
         _playerAnim = GetComponent<PlayerAnimation>();
         _playerSprite = GetComponentInChildren<SpriteRenderer>();
         _swordArcSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        Health = 4;
     }
 
     // Update is called once per frame
@@ -33,7 +36,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         Movement();
 
-        if (Input.GetMouseButtonDown(0) && IsGrounded() )
+        if (CrossPlatformInputManager.GetButtonDown("A_Button") && IsGrounded() )
         {
             _playerAnim.Attack();
         }
@@ -42,7 +45,7 @@ public class Player : MonoBehaviour, IDamageable
     void Movement()
     {
         // Horizontal input for left/right
-        float move = Input.GetAxisRaw("Horizontal");
+        float move = CrossPlatformInputManager.GetAxis("Horizontal"); //Input.GetAxisRaw("Horizontal");//
         _grounded = IsGrounded();
 
         if (move > 0)
@@ -54,7 +57,7 @@ public class Player : MonoBehaviour, IDamageable
             Flip(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        if ((Input.GetKeyDown(KeyCode.Space) || CrossPlatformInputManager.GetButtonDown("B_Button")) && IsGrounded())
         {
             //jump!
             _playerAnim.JumpAnim(true);
@@ -90,8 +93,7 @@ public class Player : MonoBehaviour, IDamageable
             _playerSprite.flipX = false;
 
             // handling sword affect change side
-            //_swordArcSprite.flipX = false;
-            transform.localScale = new Vector3(1, 1, 1);
+            _swordArcSprite.flipX = false;
 
             _swordArcSprite.flipY = false;
             Vector3 newPos = _swordArcSprite.transform.localPosition;
@@ -101,8 +103,7 @@ public class Player : MonoBehaviour, IDamageable
         }
         else if (faceRight == false)
         {
-            //_playerSprite.flipX = true;
-            transform.localScale = new Vector3(-1, 1, 1);
+            _playerSprite.flipX = true;
 
             _swordArcSprite.flipX = true;
             _swordArcSprite.flipY = true;
@@ -120,6 +121,29 @@ public class Player : MonoBehaviour, IDamageable
 
     public void Damage()
     {
+        if (Health < 1)
+        {
+            return;
+        }
         Debug.Log("Player::Damage()");
+        Health--;
+        _playerAnim.hit();
+        UIManager.Instance.UpdateLives(Health);
+        if (Health < 1)
+        {
+            _playerAnim.Death();
+            StartCoroutine(PostDeathAnimationTimer());
+        }
+    }
+    private IEnumerator PostDeathAnimationTimer()
+    {
+        yield return new WaitForSeconds(2.0f);
+        Destroy(this.gameObject);
+    }
+
+    public void AddGems(int amount)
+    {
+        dimonds += amount;
+        UIManager.Instance.UpdateGemCount(dimonds);
     }
 }
