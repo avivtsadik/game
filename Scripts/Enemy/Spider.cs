@@ -21,7 +21,10 @@ public class Spider : Enemy, IDamageable
     {
         if (isDead)
             return;
-        Health--;
+        if (GameManager.Instance.HasSwordImprove)
+            Health -= 5;
+        else
+            Health--;
         if (Health < 1)
         {
             isDead = true;

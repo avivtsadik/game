@@ -70,6 +70,10 @@ public class Player : MonoBehaviour, IDamageable
         _playerAnim.Move(move);
     }
 
+    public void changeJumpForce(float jump)
+    {
+        _jumpForce = jump;
+    }
     bool IsGrounded()
     {
         RaycastHit2D hitinfo = Physics2D.Raycast(transform.position, Vector2.down, 0.6f, 1 << 8);
@@ -131,11 +135,16 @@ public class Player : MonoBehaviour, IDamageable
         UIManager.Instance.UpdateLives(Health);
         if (Health < 1)
         {
-            _playerAnim.Death();
-            StartCoroutine(PostDeathAnimationTimer());
+            Death();
         }
     }
-    private IEnumerator PostDeathAnimationTimer()
+
+    public void Death()
+    {
+        _playerAnim.Death();
+        StartCoroutine(PostDeathAnimationTimer());
+    }
+    public IEnumerator PostDeathAnimationTimer()
     {
         yield return new WaitForSeconds(2.0f);
         Destroy(this.gameObject);
@@ -144,6 +153,12 @@ public class Player : MonoBehaviour, IDamageable
     public void AddGems(int amount)
     {
         dimonds += amount;
+        UIManager.Instance.UpdateGemCount(dimonds);
+    }
+
+    public void MinusGems(int amount)
+    {
+        dimonds -= amount;
         UIManager.Instance.UpdateGemCount(dimonds);
     }
 }

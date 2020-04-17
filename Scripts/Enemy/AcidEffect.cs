@@ -7,11 +7,17 @@ public class AcidEffect : MonoBehaviour
     private bool _canDamage = true;
     private void Start()
     {
-        Destroy(this.gameObject, 5.0f);
+        if (transform.position.x < 0)
+            Destroy(this.gameObject, 5.0f);
+        else
+            Destroy(this.gameObject, 3.0f);
     }
     private void Update()
     {
-        transform.Translate(Vector3.right * 3 * Time.deltaTime);
+        if (transform.position.x < 0)
+            transform.Translate(Vector3.right * 3 * Time.deltaTime);
+        else
+            transform.Translate(Vector3.left * 3 * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

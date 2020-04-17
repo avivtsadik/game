@@ -22,7 +22,10 @@ public class Skeleton : Enemy, IDamageable
         if (isDead)
             return;
         Debug.Log("Skeleton::Damage!");
-        Health--;
+        if (GameManager.Instance.HasSwordImprove)
+            Health -= 5;
+        else
+            Health--;
         anim.SetTrigger("Hit");
         isHit = true;
         anim.SetBool("InCombat", true);

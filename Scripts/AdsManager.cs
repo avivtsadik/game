@@ -23,6 +23,8 @@ public class AdsManager : MonoBehaviour
         {
             case ShowResult.Finished:
                 Debug.Log("Ad Finished!");
+                GameManager.Instance.Player.AddGems(100);
+                UIManager.Instance.OpenShop(GameManager.Instance.Player.dimonds);
                 break;
             case ShowResult.Skipped:
                 Debug.Log("Skipped Ad!");

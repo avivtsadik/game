@@ -23,7 +23,10 @@ public class MossGiant : Enemy, IDamageable
         if (isDead)
             return;
         Debug.Log("MossGiant::Damage!");
-        Health--;
+        if (GameManager.Instance.HasSwordImprove)
+            Health -= 5;
+        else
+            Health--;
         anim.SetTrigger("Hit");
         isHit = true;
         anim.SetBool("InCombat", true);

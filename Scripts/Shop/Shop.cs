@@ -19,7 +19,7 @@ public class Shop : MonoBehaviour
             {
                 UIManager.Instance.OpenShop(_player.dimonds);
             }
-             
+            UIManager.Instance.unableShopSelection();
             shopPanel.SetActive(true);
         }
     }
@@ -41,16 +41,19 @@ public class Shop : MonoBehaviour
         switch(item)
         {
             case 0:
+                UIManager.Instance.enableShopSelection();
                 UIManager.Instance.UpdateShopSelection(-54);
                 currentSelectedItem = 0;
                 currentItemCost = 200;
                 break;
             case 1:
+                UIManager.Instance.enableShopSelection();
                 UIManager.Instance.UpdateShopSelection(-170);
                 currentSelectedItem = 1;
                 currentItemCost = 400;
                 break;
             case 2:
+                UIManager.Instance.enableShopSelection();
                 UIManager.Instance.UpdateShopSelection(-283);
                 currentSelectedItem = 2;
                 currentItemCost = 100;
@@ -62,20 +65,36 @@ public class Shop : MonoBehaviour
     {
         if (_player.dimonds >= currentItemCost)
         {
-            if (currentSelectedItem == 2)
+            if (currentSelectedItem == 2 && !GameManager.Instance.HasKeyToCastle)
             {
+                GameManager.Instance.Player.MinusGems(currentItemCost);
                 GameManager.Instance.HasKeyToCastle = true;
+                UIManager.Instance.showKeyPicture();
             }
-            _player.dimonds -= currentItemCost;
-            Debug.Log("Purchesed " + currentSelectedItem);
-            Debug.Log("Remaining gems: " + _player.dimonds);
-            shopPanel.SetActive(false);
+            else if (currentSelectedItem == 1 && !GameManager.Instance.HasImprovedJump)
+            {
+                GameManager.Instance.Player.MinusGems(currentItemCost);
+                GameManager.Instance.HasImprovedJump = true;
+                UIManager.Instance.showWingsPicture();
+            }
+            else if (currentSelectedItem == 0 && !GameManager.Instance.HasSwordImprove)
+            {
+                GameManager.Instance.Player.MinusGems(currentItemCost);
+                GameManager.Instance.HasSwordImprove = true;
+                UIManager.Instance.showSwordPicture();
+            }
+            //shopPanel.SetActive(false);
         }
         else
         {
-            Debug.Log("Not enough money!");
-            shopPanel.SetActive(false);
+            UIManager.Instance.notEnoughMoney.SetActive(true);
+            StartCoroutine(suspendForTwoSec());
         }
 
+    }
+    private IEnumerator suspendForTwoSec()
+    {
+        yield return new WaitForSeconds(2.0f);
+        UIManager.Instance.notEnoughMoney.SetActive(false);
     }
 }
